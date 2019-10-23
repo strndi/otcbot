@@ -1,0 +1,278 @@
+Waypoint < Label
+  background-color: alpha
+  text-offset: 2 0
+  focusable: true
+  id: wpt
+
+BotBox < OptionCheckBox
+  @onCheckChange: modules.game_luniabot.toggleLoop(self:getId())
+
+BotBoxx < CheckBox
+  @onCheckChange: modules.game_luniabot.toggleLoop(self:getId())
+  
+MainWindow
+  !text: tr('LuniaBot')
+  size: 200 550
+
+  @onEnter: modules.luniabot.destroy()
+  @onEscape: modules.luniabot.destroy()
+
+  BotBox
+    id: autoAttack
+    !tooltip: tr('Automatically attack monsters.')
+    !text: tr('Autoattack')
+    focusable: true
+
+  TextList
+    id: waypoints
+    height: 100
+    anchors.top: prev.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-top: 2
+    focusable: false
+    vertical-scrollbar: reasonListScrollBar
+
+  VerticalScrollBar
+    id: reasonListScrollBar
+    anchors.top: waypoints.top
+    anchors.bottom: waypoints.bottom
+    anchors.right: waypoints.right
+    step: 14
+    pixels-scroll: true
+
+  Button
+    id: buttonOk
+    !text: tr('Add waypoint')
+    width: 120
+    @onClick: modules.game_luniabot.fag()
+    anchors.top: waypoints.bottom
+    anchors.left: waypoints.left
+
+  BotBox
+    id: walking
+    !text: tr('Walking')
+    
+
+  Button
+    id: save
+    !text: tr('Save waypoints')
+    width: 120
+    @onClick: modules.game_luniabot.saveWaypoints()
+    anchors.top: walking.bottom
+    anchors.left: walking.left
+
+  Button
+    id: load
+    !text: tr('Load waypoints')
+    width: 120
+    @onClick: modules.game_luniabot.loadWaypoints()
+    anchors.top: save.bottom
+    anchors.left: save.left
+
+  Button
+    id: clear
+    !text: tr('Clear waypoints')
+    width: 120
+    @onClick: modules.game_luniabot.clearWaypoints()
+    anchors.top: load.bottom
+    anchors.left: load.left
+
+  HorizontalSeparator
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: prev.bottom
+    margin-top: 8
+    margin-bot: 8
+
+
+  BotBoxx
+    id: AutoHealSpell
+    !text: tr('Auto Heal Spell')
+    !tooltip: tr('Heal your character automatically with a spell when you are under a percentage of your maximum health.')
+    anchors.top: prev.bottom
+    anchors.left: clear.left
+    width: 180
+    focusable: true
+
+  Label
+    id: HealthSpellLabel
+    width: 120
+    !text: tr('Spell text:')
+    anchors.left: prev.left
+    anchors.top: prev.bottom
+    margin-top: 5
+
+  TextEdit
+    id: HealSpellText
+    width: 120
+    !text: tr('Exura')
+    anchors.left: parent.left
+    anchors.right: HealthSpellLabel.right
+    anchors.top: HealthSpellLabel.bottom
+    margin-top: 2
+
+  Label
+    id: HealthSpellLabel
+    !text: tr('Under HP:')
+    anchors.right: parent.right
+    anchors.top: HealthSpellLabel.top
+    margin-left: 18
+
+  TextEdit
+    id: HealthSpellPercent
+    !text: tr('90')
+    width: 30
+    anchors.right: prev.right
+    anchors.top: HealthSpellLabel.bottom
+    margin-top: 2
+    margin-left: 25
+
+  Label
+    id: Percent
+    !text: tr('%%')
+    anchors.left: HealthSpellPercent.right
+    anchors.top: HealthSpellLabel.bottom
+    margin-top: 2
+
+  HorizontalSeparator
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: prev.bottom
+    margin-top: 12
+    margin-bot: 12
+
+  CheckBox
+    id: AutoHealItem
+    !text: tr('Auto Heal Item')
+    !tooltip: tr('Heal your character automatically with an item when you are under a percentage of your maximum health.')
+    anchors.top: prev.bottom
+    anchors.left: clear.left
+    width: 180
+    focusable: true
+
+  Label
+    id: HealthItemLabel
+    width: 120
+    !text: tr('Item ID:')
+    anchors.left: prev.left
+    anchors.top: prev.bottom
+    margin-top: 5
+
+  TextEdit
+    id: HealItem
+    width: 120
+    !text: tr('Exura')
+    anchors.left: parent.left
+    anchors.right: HealthItemLabel.right
+    anchors.top: HealthItemLabel.bottom
+    margin-top: 2
+
+  Label
+    id: HealthItemLabel
+    !text: tr('Under HP:')
+    anchors.right: parent.right
+    anchors.top: HealthItemLabel.top
+    margin-left: 18
+
+  TextEdit
+    id: HealItemPercent
+    !text: tr('90')
+    width: 30
+    anchors.right: prev.right
+    anchors.top: HealthItemLabel.bottom
+    margin-top: 2
+    margin-left: 25
+
+  Label
+    id: Percent
+    !text: tr('%%')
+    anchors.left: HealItemPercent.right
+    anchors.top: HealthItemLabel.bottom
+    margin-top: 2
+  HorizontalSeparator
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: prev.bottom
+    margin-top: 12
+    margin-bot: 12
+
+  CheckBox
+    id: AutoMana
+    !text: tr('Mana Restore')
+    !tooltip: tr('Automatically use an item to restore your mana.')
+    anchors.top: prev.bottom
+    anchors.left: clear.left
+    width: 180
+    focusable: true
+
+  Label
+    id: ManaItemLabel
+    width: 120
+    !text: tr('Item ID:')
+    anchors.left: prev.left
+    anchors.top: prev.bottom
+    margin-top: 5
+
+  TextEdit
+    id: ManaItem
+    width: 120
+    !text: tr('268')
+    anchors.left: parent.left
+    anchors.right: ManaItemLabel.right
+    anchors.top: ManaItemLabel.bottom
+    margin-top: 2
+
+  Label
+    id: ManaItemLabel
+    !text: tr('Under Mana:')
+    anchors.right: parent.right
+    anchors.top: ManaItemLabel.top
+    margin-left: 18
+
+  TextEdit
+    id: ManaPercent
+    !text: tr('90')
+    width: 30
+    anchors.right: prev.right
+    anchors.top: ManaItemLabel.bottom
+    margin-top: 2
+    margin-left: 25
+
+  Label
+    id: Percent
+    !text: tr('%%')
+    anchors.left: prev.right
+    anchors.top: ManaItemLabel.bottom
+    margin-top: 2
+
+  HorizontalSeparator
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: prev.bottom
+    margin-top: 12
+    margin-bot: 12
+
+  BotBoxx
+    id: AtkSpell
+    !text: tr('Attack spell')
+    !tooltip: tr('Automatically cast the spell below when you are attacking.')
+    anchors.top: prev.bottom
+    anchors.left: clear.left
+    width: 180
+    focusable: true
+
+  TextEdit
+    id: AtkSpellText
+    width: 120
+    !text: tr('exori vis')
+    anchors.top: prev.bottom
+    anchors.left: clear.left
+    margin-top: 2
+
+  HorizontalSeparator
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: prev.bottom
+    margin-top: 12
+    margin-bot: 12
