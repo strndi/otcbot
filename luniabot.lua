@@ -13,6 +13,9 @@ local atkLoopId = nil
 local atkSpellLoopId = nil
 local itemHealingLoopId = nil
 local spellHealingLoopId = nil
+local manaLoopId = nil
+local hasteLoopId = nil
+local shieldLoopId = nil
 local player = nil
 local healingItem 
 local manaItem
@@ -37,6 +40,10 @@ function init()
 	luniaBotWindow.HealItemPercent.onTextChange = saveBotText
 	luniaBotWindow.ManaItem.onTextChange = saveBotText
 	luniaBotWindow.ManaPercent.onTextChange = saveBotText
+	luniaBotWindow.WptName.onTextChange = saveBotText
+	luniaBotWindow.ManaSpellText.onTextChange = saveBotText
+	luniaBotWindow.ManaTrainPercent.onTextChange = saveBotText
+	luniaBotWindow.HasteText.onTextChange = saveBotText
 	connect(g_game, { onGameStart = logIn})
 end
 
@@ -53,7 +60,7 @@ function logIn()
 	for _,checkButton in ipairs(checkButtons) do
 		checkButton:setChecked(g_settings.getBoolean(player:getName() .. " " .. checkButton:getId()))
 	end
-	local textBoxes = {luniaBotWindow.AtkSpellText, luniaBotWindow.HealSpellText, luniaBotWindow.HealthSpellPercent, luniaBotWindow.HealItem, luniaBotWindow.HealItemPercent, luniaBotWindow.ManaItem, luniaBotWindow.ManaPercent}
+	local textBoxes = {luniaBotWindow.AtkSpellText, luniaBotWindow.HealSpellText, luniaBotWindow.HealthSpellPercent, luniaBotWindow.HealItem, luniaBotWindow.HealItemPercent, luniaBotWindow.ManaItem, luniaBotWindow.ManaPercent, luniaBotWindow.WptName}
 	for _,textBox in ipairs(textBoxes) do
 		local storedText = g_settings.get(player:getName() .. " " .. textBox:getId())
 		if (string.len(storedText) >= 1) then
@@ -91,6 +98,9 @@ function toggleLoop(key)
 		walking = {walkToTarget, walkEvent},
 		AutoHealSpell = {healingSpellLoop, spellHealingLoopId},
 		AtkSpell = {atkSpellLoop, atkSpellLoopId},
+		ManaTrain = {manaTrainLoop, manaLoopId},
+		AutoHaste = {hasteLoop, hasteLoopId},
+		AutoManaShield = {shieldLoop, shieldLoopId},
 	}
 
 	local btn = luniaBotWindow:getChildById(key)
@@ -306,13 +316,48 @@ end
 function healingSpellLoop()
 	local healingSpellPercentage = tonumber(luniaBotWindow.HealthSpellPercent:getText())
 	local healSpell = luniaBotWindow.HealSpellText:getText()
-	if (not player:getHealth()) then
+	if (not player) then
 		spellHealingLoopId = scheduleEvent(healingSpellLoop, 250)
 	end
 	if (player:getHealth() <= (player:getMaxHealth() * (healingSpellPercentage/100))) then
 		g_game.talk(healSpell)
 	end
 	spellHealingLoopId = scheduleEvent(healingSpellLoop, 250)
+end
+
+function manaTrainLoop()
+	local manaTrainPercentage = tonumber(luniaBotWindow.ManaTrainPercent:getText())
+	local manaSpell = luniaBotWindow.ManaSpellText:getText()
+	if (not player) then
+		manaLoopId = scheduleEvent(manaTrainLoop, 1000)
+	end
+	if (player:getMana() >= (player:getMaxMana() * (manaTrainPercentage/100))) then
+		g_game.talk(manaSpell)
+	end
+	manaLoopId = scheduleEvent(manaTrainLoop, 1000)
+end
+
+function hasteLoop()
+	local hasteSpell = luniaBotWindow.HasteText:getText()
+	if (not player) then
+		hasteLoopId = scheduleEvent(hasteLoop, 1000)
+	end
+	if (player:getHealth() >= (player:getMaxHealth() * (70/100))) then -- only cast when healthy
+		if (not player:hasState(PlayerStates.Haste, player:getStates())) then
+			g_game.talk(hasteSpell)
+		end
+	end
+	hasteLoopId = scheduleEvent(hasteLoop, 1000)
+end
+
+function shieldLoop()
+	if (not player) then
+		shieldLoopId = scheduleEvent(shieldLoop, 1000)
+	end
+	if (not player:hasState(PlayerStates.ManaShield, player:getStates())) then
+		g_game.talk('utamo vita')
+	end
+	shieldLoopId = scheduleEvent(shieldLoop, 1000)
 end
 
 function atkSpellLoop()

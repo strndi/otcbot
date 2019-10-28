@@ -7,15 +7,13 @@ Waypoint < Label
 BotBox < OptionCheckBox
   @onCheckChange: modules.game_luniabot.toggleLoop(self:getId())
 
-BotBoxx < CheckBox
+NormalBotBox < CheckBox
   @onCheckChange: modules.game_luniabot.toggleLoop(self:getId())
   
 MainWindow
   !text: tr('LuniaBot')
-  size: 200 550
-
-  @onEnter: modules.luniabot.destroy()
-  @onEscape: modules.luniabot.destroy()
+  size: 210 640
+  @onEscape: self:hide()
 
   BotBox
     id: autoAttack
@@ -103,7 +101,7 @@ MainWindow
     margin-bot: 8
 
 
-  BotBoxx
+  NormalBotBox
     id: AutoHealSpell
     !text: tr('Auto Heal Spell')
     !tooltip: tr('Heal your character automatically with a spell when you are under a percentage of your maximum health.')
@@ -179,7 +177,7 @@ MainWindow
   TextEdit
     id: HealItem
     width: 120
-    !text: tr('Exura')
+    !text: tr('266')
     anchors.left: parent.left
     anchors.right: HealthItemLabel.right
     anchors.top: HealthItemLabel.bottom
@@ -270,7 +268,7 @@ MainWindow
     margin-top: 12
     margin-bot: 12
 
-  BotBoxx
+  NormalBotBox
     id: AtkSpell
     !text: tr('Attack spell')
     !tooltip: tr('Automatically cast the spell below when you are attacking.')
@@ -293,3 +291,79 @@ MainWindow
     anchors.top: prev.bottom
     margin-top: 12
     margin-bot: 12
+
+  NormalBotBox
+    id: ManaTrain
+    !text: tr('Mana training')
+    !tooltip: tr('Automatically cast this spell when above mana:')
+    anchors.top: prev.bottom
+    anchors.left: clear.left
+    width: 180
+    focusable: true
+
+  TextEdit
+    id: ManaSpellText
+    width: 100
+    !text: tr('utana vid')
+    anchors.top: prev.bottom
+    anchors.left: clear.left
+    margin-top: 2
+
+
+  Label
+    id: Percent
+    !text: tr('Above')
+    anchors.left: prev.right
+    anchors.top: prev.top
+    margin-top: 2
+    margin-left: 5
+
+
+  TextEdit
+    id: ManaTrainPercent
+    !text: tr('90')
+    width: 30
+    anchors.left: prev.right
+    anchors.top: prev.top
+    margin-top: 2
+    margin-left: 5
+
+  Label
+    id: Percent
+    !text: tr('%%')
+    anchors.left: prev.right
+    anchors.top: prev.top
+    margin-top: 2
+
+
+  HorizontalSeparator
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: prev.bottom
+    margin-top: 12
+    margin-bot: 12
+
+  NormalBotBox
+    id: AutoHaste
+    !text: tr('Auto haste')
+    anchors.top: prev.bottom
+    anchors.left: clear.left
+    width: 180
+    focusable: true
+
+  TextEdit
+    id: HasteText
+    width: 100
+    !text: tr('utani hur')
+    anchors.top: prev.bottom
+    anchors.left: clear.left
+    margin-top: 2
+
+  NormalBotBox
+    id: AutoManaShield
+    !text: tr('Auto mana shield')
+    !tooltip: tr('Automatically cast utamo vita when you dont have magic shield')
+    anchors.top: prev.bottom
+    anchors.left: clear.left
+    width: 180
+    focusable: true
