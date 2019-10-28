@@ -271,13 +271,13 @@ function saveWaypoints()
 		saveText = saveText .. '{x = '.. v.x ..', y = ' .. v.y .. ', z = ' .. v.z .. '},\n'
 	end
 	saveText = saveText .. '}'
-	local file = io.open('modules/luniabot/wpts/'.. luniaBotWindow.WptName:getText() ..'.lua', 'w')
+	local file = io.open('modules/otcbot-master/wpts/'.. luniaBotWindow.WptName:getText() ..'.lua', 'w')
 	file:write(saveText)
 	file:close()
 end
 
 function loadWaypoints() 
-	local f = io.open('modules/luniabot/wpts/'.. luniaBotWindow.WptName:getText() ..'.lua', "rb")
+	local f = io.open('modules/otcbot-master/wpts/'.. luniaBotWindow.WptName:getText() ..'.lua', "rb")
     local content = f:read("*all")
 	f:close()
 	clearWaypoints()

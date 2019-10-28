@@ -73,7 +73,7 @@ MainWindow
     !text: tr('Save')
     width: 80
     @onClick: modules.game_luniabot.saveWaypoints()
-    !tooltip: tr('Saves your waypoints in the filename above, located inside modules/luniabot/wpts.')
+    !tooltip: tr('Saves your waypoints in the filename above, located inside modules/otcbot-master/wpts.')
     anchors.top: prev.bottom
     anchors.left: prev.left
 
@@ -82,7 +82,7 @@ MainWindow
     !text: tr('Load')
     width: 80
     @onClick: modules.game_luniabot.loadWaypoints()
-    !tooltip: tr('Loads your waypoints from the filename above, located inside modules/luniabot/wpts.')
+    !tooltip: tr('Loads your waypoints from the filename above, located inside modules/otcbot-master/wpts.')
     anchors.top: save.top
     anchors.left: save.right
 
