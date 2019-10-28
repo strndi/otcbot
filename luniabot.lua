@@ -24,7 +24,7 @@ function init()
 	player = g_game.getLocalPlayer()
 	waypointList = luniaBotWindow.waypoints
 	luniaBotWindow:hide()  
-	luniaBotButton = modules.client_topmenu.addLeftGameButton('luniaBotButton', tr('LuniaBot'), '/client_modulemanager/spacebar', toggle)
+	luniaBotButton = modules.client_topmenu.addLeftGameButton('luniaBotButton', tr('LuniaBot'), '/luniabot/luniabot', toggle)
 	atkButton = luniaBotWindow.autoAttack
 	walkButton = luniaBotWindow.walking
 	healthSpellButton = luniaBotWindow.AutoHealSpell	
@@ -59,10 +59,20 @@ end
 
 function logIn()
 	player = g_game.getLocalPlayer()
+
+		--Fixes default values
+	if(luniaBotWindow.HealItem:getText()) == ",266" then
+		luniaBotWindow.HealItem:setText('266')
+	end
+	if(luniaBotWindow.ManaItem:getText()) == ",268" then
+		luniaBotWindow.ManaItem:setText('268')
+	end
+
 	local checkButtons = {atkButton, healthSpellButton, walkButton, healthItemButton, manaRestoreButton, atkSpellButton, manaTrainButton, hasteButton, manaShieldButton}
 	for _,checkButton in ipairs(checkButtons) do
 		checkButton:setChecked(g_settings.getBoolean(player:getName() .. " " .. checkButton:getId()))
 	end
+
 	local textBoxes = {luniaBotWindow.AtkSpellText, luniaBotWindow.HealSpellText, luniaBotWindow.HealthSpellPercent, luniaBotWindow.HealItem, luniaBotWindow.HealItemPercent, luniaBotWindow.ManaItem, luniaBotWindow.ManaPercent, luniaBotWindow.WptName}
 	for _,textBox in ipairs(textBoxes) do
 		local storedText = g_settings.get(player:getName() .. " " .. textBox:getId())
