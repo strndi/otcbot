@@ -52,31 +52,48 @@ MainWindow
   BotBox
     id: walking
     !text: tr('Walking')
+
+  Label
+    id: wptlabel
+    !text: tr('Waypoint filename:') 
+    anchors.top: prev.bottom
+    anchors.left: prev.left
+
+  TextEdit
+    id: WptName
+    width: 120
+    !text: tr('default')
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: prev.bottom
+    margin-top: 2
     
 
   Button
     id: save
-    !text: tr('Save waypoints')
-    width: 120
+    !text: tr('Save')
+    width: 80
     @onClick: modules.game_luniabot.saveWaypoints()
-    anchors.top: walking.bottom
-    anchors.left: walking.left
+    !tooltip: tr('Saves your waypoints in the filename above, located inside modules/luniabot/wpts.')
+    anchors.top: prev.bottom
+    anchors.left: prev.left
 
   Button
     id: load
-    !text: tr('Load waypoints')
-    width: 120
+    !text: tr('Load')
+    width: 80
     @onClick: modules.game_luniabot.loadWaypoints()
-    anchors.top: save.bottom
-    anchors.left: save.left
+    !tooltip: tr('Loads your waypoints from the filename above, located inside modules/luniabot/wpts.')
+    anchors.top: save.top
+    anchors.left: save.right
 
   Button
     id: clear
     !text: tr('Clear waypoints')
     width: 120
     @onClick: modules.game_luniabot.clearWaypoints()
-    anchors.top: load.bottom
-    anchors.left: load.left
+    anchors.top: save.bottom
+    anchors.left: save.left
 
   HorizontalSeparator
     anchors.left: parent.left

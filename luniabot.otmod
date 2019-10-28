@@ -6,5 +6,6 @@ Module
   sandboxed: true 
   scripts: [ luniabot.lua ]
   dependencies: [ game_bot ]
+  autoload: true
   @onLoad: init()
   @onUnload: terminate()
