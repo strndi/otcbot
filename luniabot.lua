@@ -31,6 +31,9 @@ function init()
 	healthItemButton = luniaBotWindow.AutoHealItem
 	manaRestoreButton = luniaBotWindow.AutoMana
 	atkSpellButton = luniaBotWindow.AtkSpell
+	manaTrainButton = luniaBotWindow.ManaTrain
+	hasteButton = luniaBotWindow.AutoHaste
+	manaShieldButton = luniaBotWindow.AutoManaShield
 	healthItemButton.onCheckChange = autoHealPotion
 	manaRestoreButton.onCheckChange = autoManaPotion
 	luniaBotWindow.AtkSpellText.onTextChange = saveBotText
@@ -56,7 +59,7 @@ end
 
 function logIn()
 	player = g_game.getLocalPlayer()
-	local checkButtons = {atkButton, healthSpellButton, healthItemButton, manaRestoreButton, atkSpellButton}
+	local checkButtons = {atkButton, healthSpellButton, walkButton, healthItemButton, manaRestoreButton, atkSpellButton, manaTrainButton, hasteButton, manaShieldButton}
 	for _,checkButton in ipairs(checkButtons) do
 		checkButton:setChecked(g_settings.getBoolean(player:getName() .. " " .. checkButton:getId()))
 	end
@@ -213,7 +216,7 @@ end
 
 
 function walkToTarget()
-	--found this function made by gesior, i edited it abit, maybe there's better ways to walk? idk
+	--found this function made by gesior, i edited it abit, maybe there's better ways to walk? 
 	autowalkTargetPosition = waypoints[currentTargetPositionId]
     if not g_game.isOnline() then
 		walkEvent = scheduleEvent(walkToTarget, 500)
@@ -224,27 +227,27 @@ function walkToTarget()
     --     return
 	-- end
     if g_game.isAttacking() or isFollowing or not autowalkTargetPosition then
-		-- do not walk with selected attack/follow target or when there is no target position
 		walkEvent = scheduleEvent(walkToTarget, 100)
         return
     end
     -- fast search path on minimap (known tiles)
     steps, result = g_map.findPath(g_game.getLocalPlayer():getPosition(), autowalkTargetPosition, 5000, 0)
-    if result == PathFindResults.Ok then
+	if result == PathFindResults.Ok then
         g_game.walk(steps[1], true)
-    elseif result == PathFindResults.Position then
-        -- on target position
+	elseif result == PathFindResults.Position then
 		currentTargetPositionId = currentTargetPositionId + 1
 		if (currentTargetPositionId > #waypoints) then
 			currentTargetPositionId = 1
 		end
-        -- autowalkTargetPosition = waypoints[(currentTargetPositionId % #waypoints) + 1]
     else
         -- slow search path on minimap, if not found, start 'scanning' map
         steps, result = g_map.findPath(g_game.getLocalPlayer():getPosition(), autowalkTargetPosition, 25000, 1)
         if result == PathFindResults.Ok then
             g_game.walk(steps[1], true)
-        end
+		else
+			-- can't reach?  so skip this waypoint. improve this somehow
+			currentTargetPositionId = currentTargetPositionId + 1
+		end
     end
     -- limit steps to 10 per second (100 ms between steps)
     walkEvent = scheduleEvent(walkToTarget, math.max(100, g_game.getLocalPlayer():getStepTicksLeft()))

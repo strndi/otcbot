@@ -50,6 +50,7 @@ MainWindow
   BotBox
     id: walking
     !text: tr('Walking')
+    focusable: true
 
   Label
     id: wptlabel
