@@ -1,11 +1,10 @@
 Module
   name: game_luniabot
-  description: Display a players spells with their appropriate information 
-  author: BeniS
+  description: Basic bot module
+  author: Lunia
   website: www.otclient.info
   sandboxed: true 
   scripts: [ luniabot.lua ]
-  dependencies: [ game_bot ]
   autoload: true
   @onLoad: init()
   @onUnload: terminate()
