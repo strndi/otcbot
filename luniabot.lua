@@ -24,7 +24,7 @@ function init()
 	player = g_game.getLocalPlayer()
 	waypointList = luniaBotWindow.waypoints
 	luniaBotWindow:hide()  
-	luniaBotButton = modules.client_topmenu.addLeftGameButton('luniaBotButton', tr('LuniaBot'), '/luniabot/luniabot', toggle)
+	luniaBotButton = modules.client_topmenu.addLeftGameButton('luniaBotButton', tr('LuniaBot'), '/otcbot-master/luniabot', toggle)
 	atkButton = luniaBotWindow.autoAttack
 	walkButton = luniaBotWindow.walking
 	healthSpellButton = luniaBotWindow.AutoHealSpell	
