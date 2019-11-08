@@ -15,6 +15,7 @@ local itemHealingLoopId = nil
 local spellHealingLoopId = nil
 local manaLoopId = nil
 local hasteLoopId = nil
+local buffLoopId = nil
 local shieldLoopId = nil
 local player = nil
 local healingItem 
@@ -33,6 +34,7 @@ function init()
 	atkSpellButton = luniaBotWindow.AtkSpell
 	manaTrainButton = luniaBotWindow.ManaTrain
 	hasteButton = luniaBotWindow.AutoHaste
+	buffButton = luniaBotWindow.AutoBuff
 	manaShieldButton = luniaBotWindow.AutoManaShield
 	healthItemButton.onCheckChange = autoHealPotion
 	manaRestoreButton.onCheckChange = autoManaPotion
@@ -68,12 +70,12 @@ function logIn()
 		luniaBotWindow.ManaItem:setText('268')
 	end
 
-	local checkButtons = {atkButton, healthSpellButton, walkButton, healthItemButton, manaRestoreButton, atkSpellButton, manaTrainButton, hasteButton, manaShieldButton}
+	local checkButtons = {atkButton, healthSpellButton, walkButton, healthItemButton, manaRestoreButton, atkSpellButton, manaTrainButton, hasteButton, manaShieldButton, buffButton}
 	for _,checkButton in ipairs(checkButtons) do
 		checkButton:setChecked(g_settings.getBoolean(player:getName() .. " " .. checkButton:getId()))
 	end
 
-	local textBoxes = {luniaBotWindow.AtkSpellText, luniaBotWindow.HealSpellText, luniaBotWindow.HealthSpellPercent, luniaBotWindow.HealItem, luniaBotWindow.HealItemPercent, luniaBotWindow.ManaItem, luniaBotWindow.ManaPercent, luniaBotWindow.WptName}
+	local textBoxes = {luniaBotWindow.HasteText, luniaBotWindow.AtkSpellText, luniaBotWindow.HealSpellText, luniaBotWindow.HealthSpellPercent, luniaBotWindow.HealItem, luniaBotWindow.HealItemPercent, luniaBotWindow.ManaItem, luniaBotWindow.ManaPercent, luniaBotWindow.WptName, luniaBotWindow.BuffText}
 	for _,textBox in ipairs(textBoxes) do
 		local storedText = g_settings.get(player:getName() .. " " .. textBox:getId())
 		if (string.len(storedText) >= 1) then
@@ -114,6 +116,7 @@ function toggleLoop(key)
 		ManaTrain = {manaTrainLoop, manaLoopId},
 		AutoHaste = {hasteLoop, hasteLoopId},
 		AutoManaShield = {shieldLoop, shieldLoopId},
+		AutoBuff = {buffLoop, buffLoopId},
 	}
 
 	local btn = luniaBotWindow:getChildById(key)
@@ -231,7 +234,11 @@ function walkToTarget()
     if not g_game.isOnline() then
 		walkEvent = scheduleEvent(walkToTarget, 500)
         return
-    end
+	end
+	
+	if getDistanceBetween(autowalkTargetPosition, player:getPosition()) >= 150 then
+		walkEvent = scheduleEvent(walkToTarget, 2000)
+	end
 	-- if g_game.getLocalPlayer():getStepTicksLeft() > 0 then
 	-- 	walkEvent = scheduleEvent(walkToTarget, g_game.getLocalPlayer():getStepTicksLeft())
     --     return
@@ -321,7 +328,7 @@ function itemHealingLoop()
 			g_game.useInventoryItemWith(manaItemId, player)
 		end
 	end
-	itemHealingLoopId = scheduleEvent(itemHealingLoop, 250)
+	itemHealingLoopId = scheduleEvent(itemHealingLoop, 502)
 end
 
 
@@ -330,12 +337,12 @@ function healingSpellLoop()
 	local healingSpellPercentage = tonumber(luniaBotWindow.HealthSpellPercent:getText())
 	local healSpell = luniaBotWindow.HealSpellText:getText()
 	if (not player) then
-		spellHealingLoopId = scheduleEvent(healingSpellLoop, 250)
+		spellHealingLoopId = scheduleEvent(healingSpellLoop, 502)
 	end
 	if (player:getHealth() <= (player:getMaxHealth() * (healingSpellPercentage/100))) then
 		g_game.talk(healSpell)
 	end
-	spellHealingLoopId = scheduleEvent(healingSpellLoop, 250)
+	spellHealingLoopId = scheduleEvent(healingSpellLoop, 502)
 end
 
 function manaTrainLoop()
@@ -363,6 +370,17 @@ function hasteLoop()
 	hasteLoopId = scheduleEvent(hasteLoop, 1000)
 end
 
+function buffLoop()
+	local buffSpell = luniaBotWindow.BuffText:getText()
+	if (not player) then
+		buffLoopId = scheduleEvent(buffLoop, 1000)
+	end
+	if (not player:hasState(PlayerStates.PartyBuff, player:getStates())) then
+		g_game.talk(buffSpell)
+	end
+	buffLoopId = scheduleEvent(buffLoop, 1000)
+end
+
 function shieldLoop()
 	if (not player) then
 		shieldLoopId = scheduleEvent(shieldLoop, 1000)
@@ -378,5 +396,5 @@ function atkSpellLoop()
 	if (g_game.isAttacking()) then
 		g_game.talk(atkSpell)
 	end
-	atkSpellLoopId = scheduleEvent(atkSpellLoop, 250)
+	atkSpellLoopId = scheduleEvent(atkSpellLoop, 502)
 end

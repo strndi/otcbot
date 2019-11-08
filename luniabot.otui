@@ -12,7 +12,7 @@ NormalBotBox < CheckBox
   
 MainWindow
   !text: tr('LuniaBot')
-  size: 210 640
+  size: 210 690
   @onEscape: self:hide()
 
   BotBox
@@ -23,7 +23,7 @@ MainWindow
 
   TextList
     id: waypoints
-    height: 100
+    height: 80
     anchors.top: prev.bottom
     anchors.left: parent.left
     anchors.right: parent.right
@@ -356,6 +356,29 @@ MainWindow
     id: HasteText
     width: 100
     !text: tr('utani hur')
+    anchors.top: prev.bottom
+    anchors.left: clear.left
+    margin-top: 2
+
+  HorizontalSeparator
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: prev.bottom
+    margin-top: 12
+    margin-bot: 12
+
+  NormalBotBox
+    id: AutoBuff
+    !text: tr('Auto buff spell')
+    anchors.top: prev.bottom
+    anchors.left: clear.left
+    width: 180
+    focusable: true
+
+  TextEdit
+    id: BuffText
+    width: 100
+    !text: tr('utito tempo')
     anchors.top: prev.bottom
     anchors.left: clear.left
     margin-top: 2
