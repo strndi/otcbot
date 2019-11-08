@@ -15,6 +15,11 @@ MainWindow
   size: 210 690
   @onEscape: self:hide()
 
+  Label
+    height: 1
+    id: fixes_bug
+    focusable: true
+
   BotBox
     id: autoAttack
     !tooltip: tr('Automatically attack monsters.')

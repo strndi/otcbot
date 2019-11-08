@@ -235,9 +235,12 @@ function walkToTarget()
 		walkEvent = scheduleEvent(walkToTarget, 500)
         return
 	end
-	
-	if getDistanceBetween(autowalkTargetPosition, player:getPosition()) >= 150 then
-		walkEvent = scheduleEvent(walkToTarget, 2000)
+
+	local playerPos = player:getPosition()
+	if (playerPos and autowalkTargetPosition) then
+		if (getDistanceBetween(playerPos, autowalkTargetPosition) >= 150) then
+			walkEvent = scheduleEvent(walkToTarget, 5000)
+		end
 	end
 	-- if g_game.getLocalPlayer():getStepTicksLeft() > 0 then
 	-- 	walkEvent = scheduleEvent(walkToTarget, g_game.getLocalPlayer():getStepTicksLeft())
