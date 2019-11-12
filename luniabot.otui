@@ -12,12 +12,15 @@ NormalBotBox < CheckBox
   
 MainWindow
   !text: tr('LuniaBot')
-  size: 210 690
+  size: 210 700
   @onEscape: self:hide()
 
   Label
     height: 1
     id: fixes_bug
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: parent.top
     focusable: true
 
   BotBox
@@ -25,6 +28,51 @@ MainWindow
     !tooltip: tr('Automatically attack monsters.')
     !text: tr('Autoattack')
     focusable: true
+  
+  BotBox
+    id: LureMonsters
+    !text: tr('Lure monsters')
+    !tooltip: tr('Only attack monsters when theres more monsters than in the max, and stop attacking when theres less than in the min box.')
+    anchors.top: prev.bottom
+    anchors.left: clear.left
+    width: 180
+    focusable: true
+
+  Label
+    id: MaxLabel
+    width: 60
+    !text: tr('Lure Max:')
+    anchors.left: prev.left
+    anchors.top: prev.bottom
+    margin-top: 5
+
+  TextEdit
+    id: LureMaximum
+    width: 30
+    !text: tr('5')
+    anchors.left: prev.right
+    anchors.top: LureMonsters.bottom
+    margin-top: 2
+    margin-left: 2
+
+
+  Label
+    id: MinLabel
+    width: 60
+    !text: tr('Lure Min:')
+    anchors.left: prev.right
+    anchors.top: LureMonsters.bottom
+    margin-top: 5
+    margin-left: 10
+
+  TextEdit
+    id: LureMinimum
+    width: 30
+    !text: tr('2')
+    anchors.left: prev.right
+    anchors.top: LureMonsters.bottom
+    margin-top: 2
+    margin-left: 2
 
   TextList
     id: waypoints

@@ -16,6 +16,7 @@ local spellHealingLoopId = nil
 local manaLoopId = nil
 local hasteLoopId = nil
 local buffLoopId = nil
+local hasLured = false
 local shieldLoopId = nil
 local player = nil
 local healingItem 
@@ -35,6 +36,7 @@ function init()
 	manaTrainButton = luniaBotWindow.ManaTrain
 	hasteButton = luniaBotWindow.AutoHaste
 	buffButton = luniaBotWindow.AutoBuff
+	lureButton = luniaBotWindow.LureMonsters
 	manaShieldButton = luniaBotWindow.AutoManaShield
 	healthItemButton.onCheckChange = autoHealPotion
 	manaRestoreButton.onCheckChange = autoManaPotion
@@ -49,6 +51,9 @@ function init()
 	luniaBotWindow.ManaSpellText.onTextChange = saveBotText
 	luniaBotWindow.ManaTrainPercent.onTextChange = saveBotText
 	luniaBotWindow.HasteText.onTextChange = saveBotText
+	luniaBotWindow.BuffText.onTextChange = saveBotText
+	luniaBotWindow.LureMinimum.onTextChange = saveBotText
+	luniaBotWindow.LureMaximum.onTextChange = saveBotText
 	connect(g_game, { onGameStart = logIn})
 end
 
@@ -70,12 +75,12 @@ function logIn()
 		luniaBotWindow.ManaItem:setText('268')
 	end
 
-	local checkButtons = {atkButton, healthSpellButton, walkButton, healthItemButton, manaRestoreButton, atkSpellButton, manaTrainButton, hasteButton, manaShieldButton, buffButton}
+	local checkButtons = {atkButton, healthSpellButton, walkButton, healthItemButton, manaRestoreButton, atkSpellButton, manaTrainButton, hasteButton, manaShieldButton, buffButton, lureButton}
 	for _,checkButton in ipairs(checkButtons) do
 		checkButton:setChecked(g_settings.getBoolean(player:getName() .. " " .. checkButton:getId()))
 	end
 
-	local textBoxes = {luniaBotWindow.HasteText, luniaBotWindow.AtkSpellText, luniaBotWindow.HealSpellText, luniaBotWindow.HealthSpellPercent, luniaBotWindow.HealItem, luniaBotWindow.HealItemPercent, luniaBotWindow.ManaItem, luniaBotWindow.ManaPercent, luniaBotWindow.WptName, luniaBotWindow.BuffText}
+	local textBoxes = {luniaBotWindow.ManaSpellText, luniaBotWindow.HasteText, luniaBotWindow.AtkSpellText, luniaBotWindow.HealSpellText, luniaBotWindow.HealthSpellPercent, luniaBotWindow.HealItem, luniaBotWindow.HealItemPercent, luniaBotWindow.ManaItem, luniaBotWindow.ManaPercent, luniaBotWindow.WptName, luniaBotWindow.BuffText, luniaBotWindow.LureMinimum, luniaBotWindow.LureMaximum}
 	for _,textBox in ipairs(textBoxes) do
 		local storedText = g_settings.get(player:getName() .. " " .. textBox:getId())
 		if (string.len(storedText) >= 1) then
@@ -123,10 +128,14 @@ function toggleLoop(key)
 	local bt = bts[btn:getId()]
 	if (btn:isChecked()) then
 		g_settings.set(player:getName() .. " " .. btn:getId(), true)
-		bt[1]()
+		if (bt) then
+			bt[1]()
+		end
 	else
 		g_settings.set(player:getName() .. " " .. btn:getId(), false)
-		removeEvent(bt[2])
+		if (bt) then
+			removeEvent(bt[2])
+		end
 	end
 end
 
@@ -206,12 +215,34 @@ end
 function atkLoop() 
 	if(player:canAttack()) then
 		local pPos = player:getPosition()
+		local luredMob = {}
+		local lureAmount = tonumber(luniaBotWindow.LureMaximum:getText())
+		local lureMinimum =  tonumber(luniaBotWindow.LureMinimum:getText())
+		local luring = lureButton:isChecked()
 		if pPos then --solves some weird bug, in the first login, the players position is nil in the start for some reason
 			local creatures = g_map.getSpectators(pPos, false)
+			if (luring) then
+				for _, mob in ipairs(creatures) do
+					cPos = mob:getPosition()
+					if getDistanceBetween(pPos, cPos) <= 5 and mob:isMonster() and player:canReach(mob) then
+						table.insert(luredMob, mob)
+					end
+				end
+			end
+			if (luring and #luredMob >= lureAmount) then
+				hasLured = true
+			end
+			if (luring and #luredMob <= lureMinimum) then
+				hasLured = false
+			end
 			for _, creature in ipairs(creatures) do
-				local cPos = creature:getPosition()
+				cPos = creature:getPosition()
 				if getDistanceBetween(pPos, cPos) <= 5 and creature:isMonster() and player:canReach(creature) then
-					g_game.attack(creature)
+					if (not luring or hasLured) then
+						g_game.attack(creature)
+						atkLoopId = scheduleEvent(atkLoop, 200)
+						return
+					end
 				end
 			end
 		end
@@ -239,17 +270,30 @@ function walkToTarget()
 	local playerPos = player:getPosition()
 	if (playerPos and autowalkTargetPosition) then
 		if (getDistanceBetween(playerPos, autowalkTargetPosition) >= 150) then
-			walkEvent = scheduleEvent(walkToTarget, 5000)
+			currentTargetPositionId = currentTargetPositionId + 1
+			if (currentTargetPositionId > #waypoints) then
+				currentTargetPositionId = 1
+			end
+			walkEvent = scheduleEvent(walkToTarget, 1500)
+			return 
 		end
 	end
 	-- if g_game.getLocalPlayer():getStepTicksLeft() > 0 then
 	-- 	walkEvent = scheduleEvent(walkToTarget, g_game.getLocalPlayer():getStepTicksLeft())
     --     return
 	-- end
-    if g_game.isAttacking() or isFollowing or not autowalkTargetPosition then
+	if g_game.isAttacking() or isFollowing then
 		walkEvent = scheduleEvent(walkToTarget, 100)
         return
-    end
+	end
+	if not autowalkTargetPosition then
+		currentTargetPositionId = currentTargetPositionId + 1
+		if (currentTargetPositionId > #waypoints) then
+			currentTargetPositionId = 1
+		end
+		walkEvent = scheduleEvent(walkToTarget, 100)
+		return
+	end
     -- fast search path on minimap (known tiles)
     steps, result = g_map.findPath(g_game.getLocalPlayer():getPosition(), autowalkTargetPosition, 5000, 0)
 	if result == PathFindResults.Ok then
@@ -331,7 +375,7 @@ function itemHealingLoop()
 			g_game.useInventoryItemWith(manaItemId, player)
 		end
 	end
-	itemHealingLoopId = scheduleEvent(itemHealingLoop, 502)
+	itemHealingLoopId = scheduleEvent(itemHealingLoop, 250)
 end
 
 
